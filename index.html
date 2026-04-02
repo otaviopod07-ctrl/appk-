@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>K.O</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  background: radial-gradient(circle at top, #140020, #000);
+  color:#fff;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  overflow:hidden;
+}
+
+#app{
+  width:90%;
+  max-width:380px;
+  padding:25px;
+  border-radius:20px;
+  background:rgba(255,255,255,0.05);
+  backdrop-filter: blur(20px);
+  box-shadow:0 0 40px rgba(192,132,252,0.2);
+  text-align:center;
+  animation:fade 1s;
+}
+
+h1{
+  font-size:18px;
+  margin-bottom:20px;
+  opacity:.7;
+}
+
+p{
+  font-size:18px;
+  margin:20px 0;
+  line-height:1.4;
+}
+
+.buttons{
+  display:flex;
+  gap:10px;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+
+button{
+  padding:12px 18px;
+  border:none;
+  border-radius:14px;
+  background:linear-gradient(135deg,#c084fc,#9333ea);
+  color:white;
+  font-weight:600;
+  cursor:pointer;
+  transition:.25s;
+}
+
+button:active{transform:scale(.9)}
+
+#cinematic{
+  position:fixed;
+  inset:0;
+  background:black;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  font-size:28px;
+  padding:20px;
+  opacity:0;
+  transition:1s;
+}
+
+#cinematic.show{opacity:1}
+
+canvas{
+  position:fixed;
+  inset:0;
+  z-index:-1;
+}
+
+@keyframes fade{
+  from{opacity:0; transform:translateY(20px)}
+  to{opacity:1; transform:translateY(0)}
+}
+</style>
+</head>
+
+<body>
+
+<div id="app"></div>
+<div id="cinematic"></div>
+<canvas id="bg"></canvas>
+
+<script>
+const app = document.getElementById("app")
+const cine = document.getElementById("cinematic")
+
+function clear(){ app.innerHTML="" }
+
+function text(t){
+  const p=document.createElement("p")
+  p.innerText=t
+  app.appendChild(p)
+}
+
+function buttons(arr){
+  const div=document.createElement("div")
+  div.className="buttons"
+  arr.forEach(b=>{
+    const btn=document.createElement("button")
+    btn.innerText=b.label
+    btn.onclick=b.fn
+    div.appendChild(btn)
+  })
+  app.appendChild(div)
+}
+
+function wait(ms){ return new Promise(r=>setTimeout(r,ms)) }
+
+// ================= FLOW =================
+async function start(){
+
+  text("OOÔ Karoliiiiiiineeeee...")
+  await wait(1200)
+  text("confia em mim e vai até o final...")
+  await wait(1200)
+  clear()
+
+  pergunta1()
+}
+
+function pergunta1(){
+  text("de 0 a 10... o quanto você acha que eu gosto de você?")
+
+  buttons([
+    {label:"0 😐", fn:()=>errado()},
+    {label:"5 🤔", fn:()=>errado()},
+    {label:"10 😌", fn:()=>certo()}
+  ])
+}
+
+function errado(){
+  clear()
+  text("sério isso? 🤨")
+  text("tenta de novo...")
+  pergunta1()
+}
+
+async function certo(){
+  clear()
+  text("quase acertou...")
+  await wait(1000)
+  text("é mais 😌")
+  await wait(1200)
+  clear()
+
+  pergunta2()
+}
+
+function pergunta2(){
+  text("qual dessas mais parece você?")
+
+  buttons([
+    {label:"não acredito em você 🤨", fn:resp2},
+    {label:"sou tranquila 😇", fn:resp2},
+    {label:"uma florzinha 🌹🤣", fn:resp2}
+  ])
+}
+
+async function resp2(e){
+  clear()
+
+  const respostas={
+    "não acredito em você 🤨":"já esperava kkk",
+    "sou tranquila 😇":"difícil acreditar hein",
+    "uma florzinha 🌹🤣":"vai ter que provar kkkkk"
+  }
+
+  text(respostas[e.target.innerText] || "kkkk")
+
+  await wait(1500)
+  historia()
+}
+
+async function historia(){
+  clear()
+  text("tem coisas que não tem discussão")
+  await wait(1200)
+  text("você é impossível de ignorar")
+  await wait(1200)
+  text("principalmente esse sorriso")
+  await wait(1200)
+
+  clear()
+  text("desde 2019...")
+  await wait(1200)
+  text("já dava pra perceber")
+  await wait(1200)
+  text("que seria diferente")
+  await wait(1200)
+
+  final()
+}
+
+async function final(){
+  await wait(800)
+  cine.classList.add("show")
+  cine.innerText="eu tentei falar de várias formas..."
+  await wait(2000)
+  cine.innerText="mas nenhuma foi suficiente"
+  await wait(2000)
+  cine.innerText="tô morrendo de saudade"
+}
+
+// ================= PARTICLES =================
+const canvas=document.getElementById("bg")
+const ctx=canvas.getContext("2d")
+
+canvas.width=innerWidth
+canvas.height=innerHeight
+
+let pts=[]
+
+for(let i=0;i<50;i++){
+  pts.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,vx:(Math.random()-0.5),vy:(Math.random()-0.5)})
+}
+
+function draw(){
+  ctx.clearRect(0,0,canvas.width,canvas.height)
+  ctx.fillStyle="rgba(192,132,252,0.5)"
+
+  pts.forEach(p=>{
+    p.x+=p.vx
+    p.y+=p.vy
+
+    if(p.x<0||p.x>canvas.width)p.vx*=-1
+    if(p.y<0||p.y>canvas.height)p.vy*=-1
+
+    ctx.beginPath()
+    ctx.arc(p.x,p.y,2,0,Math.PI*2)
+    ctx.fill()
+  })
+
+  requestAnimationFrame(draw)
+}
+
+draw()
+
+// START
+start()
+</script>
+
+</body>
+</html>
